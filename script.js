@@ -1,4 +1,9 @@
 const boardGrid = document.querySelector(".board");
+const boxList = document.getElementsByClassName("box");
+const startButton = document.querySelector(".start");
+const restartButton = document.querySelector(".restart");
+const player1NameInput = document.querySelector("#player1NameInput");
+const player2NameInput = document.querySelector("#player2NameInput");
 
 let numberOfTurns = 0;
 const winningCombos = 
@@ -12,19 +17,31 @@ const winningCombos =
  [3,5,7]
 ];
 
-
-
 //GameBoard Module
 const gameBoard = (() => {
     let board = ["","","","","","","","",""];
+
+    const drawBoard = () => {
+        for(let i = 1; i <= gameBoard.getBoard().length; i++) {
+            let newDiv = document.createElement("div");
+            newDiv.setAttribute("class","box");
+            newDiv.setAttribute("id", i);
+            newDiv.style.cursor = "pointer";
+            
+            newDiv.innerHTML = gameBoard.getBoard()[i-1];
+            boardGrid.append(newDiv);
+        }
+    }
+
     const getBoard = () => board;
     const updateBoardBox = (e) => {
        let index =  e.target.getAttribute("id");
        board[index-1] = displayController.currentPlayer.getSign();
     }
+    const resetBoard = () => {board = ["","","","","","","","",""];}
 
     return {
-        getBoard, updateBoardBox
+        getBoard, updateBoardBox, resetBoard, drawBoard
     };
 })();
 
@@ -32,22 +49,37 @@ const gameBoard = (() => {
 const displayController = (() => {
 
     let currentPlayer = null;
-    
-    const drawBoard = () => {
-        for(let i = 1; i <= gameBoard.getBoard().length; i++) {
-            let newDiv = document.createElement("div");
-            newDiv.setAttribute("class","box");
-            newDiv.setAttribute("id", i);
-            newDiv.style.border = "1px solid black";
-            newDiv.style.cursor = "pointer";
-            newDiv.addEventListener("click", e => {
-                displayMove(e)
-            })
-            //newDiv.style.gridArea = newDiv.getAttribute("id");
-            newDiv.innerHTML = gameBoard.getBoard()[i-1];
-            boardGrid.append(newDiv);
-        }
+
+    const setupGame = () => {
+        gameBoard.drawBoard();
+        boardGrid.style.opacity="0.4";
     }
+
+    const startGame = () => {
+        boardGrid.style.opacity = "1";
+        //setting Playername if not empty
+        if(player1NameInput.value == ""){
+            player1.setName("Player 1");
+        } else {
+            player1.setName(player1NameInput.value);
+        }
+
+        if(player2NameInput.value == ""){
+            player2.setName("Player 2");
+        } else {
+            player2.setName(player2NameInput.value);
+        }
+        
+        displayController.currentPlayer = player1;
+
+        Array.from(boxList).forEach(box => {           
+            box.addEventListener("click", e => {
+                displayMove(e)
+            });
+        });
+    }
+    
+
 
     const displayMove = (e) => {
         //set Sign in box of currentPlayer
@@ -76,6 +108,7 @@ const displayController = (() => {
     const checkBoardStatus = () => {
         let oPositions = [];
         let xPositions = [];
+        let winner = "";
         
         // store player's turns
         for(let i = 0; i < gameBoard.getBoard().length; i++) {
@@ -96,46 +129,69 @@ const displayController = (() => {
         for(let w = 0; w < winningCombos.length; w++){
 
             if(checker(xPositions, winningCombos[w]) && xPositions.length >= 3){
-                setTimeout(function(){alert("X HAS WON"),2000});
+                
+                setTimeout(function(){alert(`${player1.getName()} HAS WON`)},100);
+                setTimeout(function(){restartGame();},3000);
+                winner = displayController.currentPlayer.getName();
+                
+                
             }
             if(checker(oPositions, winningCombos[w]) && oPositions.length >= 3){
-                setTimeout(function(){alert("O HAS WON"),2000});
+                setTimeout(function(){alert(`${player2.getName()} HAS WON`)},100);
+                setTimeout(function(){restartGame();},3000);
+                winner = displayController.currentPlayer.getName();
+                
             }
         }
-
-        console.log(oPositions);
-        console.log(xPositions);
         
         if(numberOfTurns < 9){
             return;
-        } else {
-            setTimeout(function(){alert("Game is Over!"),2000});
+        } else if (numberOfTurns >= 9 && winner == "") {
+            setTimeout(function(){alert("Game is Over! Tie Match!")},100);
+            setTimeout(function(){restartGame();},3000);
             
-        }
+        } 
         
     }
-    
-    
+    const restartGame = () => {
+        boardGrid.innerHTML = "";
+        gameBoard.resetBoard();
+        displayController.currentPlayer = player1;
+        numberOfTurns = 0;
+        setupGame();
+        startGame();
+    }   
+
+
     return {
-        drawBoard, displayMove, currentPlayer
+     displayMove, setupGame, startGame, currentPlayer, restartGame
     };
 })();
 
 //Player Factory
 const Player = (name, sign) => {
-    const getName = () => name;
+    let playerName = name;
+    const getName = () => playerName;
     const getSign = () => sign;
-    return {getName, getSign}
+    const setName = (newName) => {playerName = newName};
+    return {getName, getSign, setName}
 };
 
-displayController.drawBoard();
+// ON GAME START
+displayController.setupGame();
 const player1 = Player("me","X");
 const player2 = Player("cpu","O");
-displayController.currentPlayer = player1;
-console.log(displayController.currentPlayer.getName());
+
+
+
+startButton.addEventListener("click", displayController.startGame);
+restartButton.addEventListener("click", displayController.restartGame);
 
 
 // DONE LOGIC Function um zu schauen ob schon jemand gewonnen hat
+
+
+//eventlistener beim grid in startGame rein
 
 // TODO
 // Gewinnermeldung
