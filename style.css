@@ -2,12 +2,91 @@
 
 body {
     display: flex;
+    flex-direction: column;
     height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
+    background-color: rgb(214, 255, 255);
+}
+
+
+.top {
+    height: 100px;
+    background-color: rgb(113, 196, 196);
+    display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
+    box-shadow: 0px 0px 20px black;
+}
+
+
+.header {
+    font-size: 48px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 250px;
+}
+
+
+
+.settings{
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.settingsHeader {
+    padding: 10px;
+}
+
+.settingsInput{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.settingsButtons {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    
+}
+
+.settingsButtons span {
+    box-shadow: 0px 0px 5px black;
+    padding: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.start {
+    background-color: yellowgreen;
+
+}
+
+.restart {
+    background-color: rgb(255, 205, 43);
+}
+
+.main {
+    display:flex;
+    justify-content: center;
 }
 
 .board {
+    border-radius: 5px;
+    background-color: rgb(255, 255, 163);
     display: grid;
     grid-template-areas: 
     "1 2 3"
@@ -16,13 +95,21 @@ body {
     ;
     grid-template-columns: repeat(3, 33.33%);
     grid-template-rows: repeat(3, 33.33%);
+    min-width: 30%;
+    max-width: 500px;
+    min-height: 30%;
+    max-height: 500px;
     width: 500px;
-    height: 500px;
+    height: 500px; 
     text-align: center;
 
 }
 .board div {
-    border: 1px solid black;
+    background-color: white;
+    box-shadow: 0px 0px 5px;
+    margin:10px;
+    border: none;
+    border-radius: 5px;
     padding: 20px;
     display: flex;
     justify-content: center;
